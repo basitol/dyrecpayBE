@@ -69,6 +69,7 @@ const loginUser = async (req, res) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
+    console.log(req.body);
     const {name, email, password} = req.body;
 
     // Validate request
