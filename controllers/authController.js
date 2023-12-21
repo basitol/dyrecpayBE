@@ -129,7 +129,13 @@ module.exports = {
         expiresIn: '1h',
       });
 
-      successMsg(res, 'Logged in successfully', {user: user._id}, 200, token);
+      successMsg(
+        res,
+        'Logged in successfully',
+        {id: user._id, username: user.username, email: user.email},
+        200,
+        token,
+      );
     } catch (error) {
       console.error(error); // Log the error for internal use
       errorMsg(res, 'Login error', 500);
