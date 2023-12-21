@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // Updated Mongoose schema
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
     },
@@ -13,11 +13,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true,
-      lowercase: true,
+      // lowercase: true,
     },
     password: {
       type: String,
       required: true,
+    },
+    location: {
+      type: String,
+      default: 'Lagos, Nigeria',
     },
   },
   {
@@ -39,6 +43,7 @@ const schema = Joi.object({
   name: Joi.string().min(5).max(30).required(),
   email: Joi.string().min(5).max(255).required().email(),
   password: Joi.string().min(5).max(255).required(),
+  location: Joi.string(),
 });
 
 module.exports = {
