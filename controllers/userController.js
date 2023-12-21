@@ -55,15 +55,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// const validate = req => {
-//   const schema = Joi.object({
-//     email: Joi.string().min(5).max(255).required().email(),
-//     password: Joi.string().min(5).max(255).required(),
-//   }).unknown(); // Allow unknown keys
-
-//   return schema.validate(req);
-// };
-
 // @desc    Register user
 // @route   POST /api/users
 // @access  Public
@@ -111,6 +102,34 @@ const registerUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).send('User not found.');
+    res.send('User deleted successfully.');
+  } catch (error) {
+    errorMsg(res, error.message);
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).send('User not found.');
+    }
+
+    // Send success response with user data
+    // Using _.pick to select only the necessary user fields to return
+    const userData = _.pick(user, ['_id', 'name', 'email', 'location']); // Adjust the fields as per your User model
+    successMsg(res, 'User details fetched successfully', userData);
+  } catch (error) {
+    errorMsg(res, 'Error fetching user details', 500, error.message);
+  }
+};
+
 const validate = req => {
   const schema = Joi.object({
     name: Joi.string().min(5).max(50).required(),
@@ -124,4 +143,6 @@ const validate = req => {
 module.exports = {
   loginUser,
   registerUser,
+  deleteUser,
+  getUser,
 };
