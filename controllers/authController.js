@@ -69,6 +69,8 @@ module.exports = {
   createUser: async (req, res) => {
     const {username, email, password, location} = req.body;
 
+    email = email.toLowerCase();
+
     // Input validation (basic example)
     if (!email || !password) {
       return errorMsg(res, 'Email and password are required', 400);
@@ -109,6 +111,7 @@ module.exports = {
     if (!email || !password) {
       return errorMsg(res, 'Email and password are required', 400);
     }
+    email = email.toLowerCase();
 
     try {
       const user = await User.findOne({email});
@@ -132,7 +135,12 @@ module.exports = {
       successMsg(
         res,
         'Logged in successfully',
-        {id: user._id, username: user.username, email: user.email},
+        {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          location: user.location,
+        },
         200,
         token,
       );
