@@ -1,6 +1,6 @@
 const successMsg = (res, message, data, statusCode = 200, token) => {
   res.header('x-auth-token', token).status(statusCode).json({
-    status: true,
+    status: statusCode, // Changed from true to statusCode
     message,
     data,
     token,
