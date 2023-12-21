@@ -69,7 +69,7 @@ module.exports = {
   createUser: async (req, res) => {
     const {username, email, password, location} = req.body;
 
-    email = email.toLowerCase();
+    // email = email.toLowerCase();
 
     // Input validation (basic example)
     if (!email || !password) {
@@ -111,7 +111,7 @@ module.exports = {
     if (!email || !password) {
       return errorMsg(res, 'Email and password are required', 400);
     }
-    email = email.toLowerCase();
+    // email = email.toLowerCase();
 
     try {
       const user = await User.findOne({email});
