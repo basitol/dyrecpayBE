@@ -1,58 +1,58 @@
-const Cart = require('../model/cartModel'); // Adjust the path as necessary
-const Product = require('../model/productModel'); // Adjust the path as necessary
+const Cart = require('../model/cartModel');
+const Product = require('../model/productModel');
+const {successMsg, errorMsg} = require('../utils/response');
 
 const cartController = {
-  // Add item to cart
   addItemToCart: async (req, res) => {
     const {userId, productId, quantity} = req.body;
+
+    if (!quantity || isNaN(quantity)) {
+      return errorMsg(res, 'Invalid quantity provided', 400);
+    }
+
+    const numericQuantity = parseInt(quantity, 10);
 
     try {
       let cart = await Cart.findOne({userId});
 
       if (cart) {
-        // Cart exists for the user
         let itemIndex = cart.products.findIndex(p => p.cartItem == productId);
 
         if (itemIndex > -1) {
-          // Update quantity of existing product
           let productItem = cart.products[itemIndex];
-          productItem.quantity = quantity;
+          productItem.quantity += numericQuantity;
           cart.products[itemIndex] = productItem;
         } else {
-          // Add new product to cart
-          cart.products.push({cartItem: productId, quantity});
+          cart.products.push({cartItem: productId, quantity: numericQuantity});
         }
         cart = await cart.save();
-        return res.status(200).json(cart);
+        successMsg(res, 'Item added to cart', cart);
       } else {
-        // Create new cart
         const newCart = await Cart.create({
           userId,
-          products: [{cartItem: productId, quantity}],
+          products: [{cartItem: productId, quantity: numericQuantity}],
         });
-        return res.status(201).json(newCart);
+        successMsg(res, 'Cart created and item added', newCart, 201);
       }
     } catch (error) {
-      return res.status(500).json({message: error.message});
+      errorMsg(res, 'Error adding item to cart', 500, error.message);
     }
   },
 
-  // Get cart by user ID
   getCart: async (req, res) => {
     const {userId} = req.params;
 
     try {
       const cart = await Cart.findOne({userId}).populate('products.cartItem');
       if (!cart) {
-        return res.status(404).json({message: 'Cart not found'});
+        return errorMsg(res, 'Cart not found', 404);
       }
-      return res.status(200).json(cart);
+      successMsg(res, 'Cart retrieved successfully', cart);
     } catch (error) {
-      return res.status(500).json({message: error.message});
+      errorMsg(res, 'Error retrieving cart', 500, error.message);
     }
   },
 
-  // Remove item from cart
   removeItemFromCart: async (req, res) => {
     const {userId, productId} = req.body;
 
@@ -60,19 +60,19 @@ const cartController = {
       let cart = await Cart.findOne({userId});
 
       if (!cart) {
-        return res.status(404).json({message: 'Cart not found'});
+        return errorMsg(res, 'Cart not found', 404);
       }
 
       const itemIndex = cart.products.findIndex(p => p.cartItem == productId);
       if (itemIndex > -1) {
         cart.products.splice(itemIndex, 1);
         cart = await cart.save();
-        return res.status(200).json(cart);
+        successMsg(res, 'Item removed from cart', cart);
       } else {
-        return res.status(404).json({message: 'Item not found in cart'});
+        errorMsg(res, 'Item not found in cart', 404);
       }
     } catch (error) {
-      return res.status(500).json({message: error.message});
+      errorMsg(res, 'Error removing item from cart', 500, error.message);
     }
   },
 
