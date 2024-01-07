@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 // Initialize the Express application
 const app = express();
 
@@ -19,7 +21,20 @@ require('./startup/db')();
 
 // Define a simple route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Wicartit server');
+  res.send('Welcome to the DecorDash server');
+});
+
+app.post('/create-payment-intent', async (req, res) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: req.body.amount, // amount in cents
+      currency: 'usd',
+      // additional parameters can be added here
+    });
+    res.send({clientSecret: paymentIntent.client_secret});
+  } catch (error) {
+    res.status(500).send({error: error.message});
+  }
 });
 
 // Start the server
