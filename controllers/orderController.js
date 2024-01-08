@@ -24,14 +24,18 @@ const orderController = {
       }
 
       // Fetch the user's cart
-      const cart = await Cart.findOne({userId}).populate('products.cartItem');
+      const cart = await Cart.findOne({userId});
       if (!cart || cart.products.length === 0) {
         return errorMsg(res, 'Cart is empty or not found', 404);
       }
 
-      // Process cart items here (transform them as needed for your Order model)
+      // Transform cart items to match Order model structure
+      const orderItems = cart.products.map(item => ({
+        product: item.cartItem, // Use the cartItem field as the product
+        quantity: item.quantity,
+      }));
 
-      // Create the order with cart items
+      // Create the order with transformed cart items
       const newOrder = new Order({
         userId,
         address,
@@ -41,8 +45,7 @@ const orderController = {
         subTotal,
         total,
         payment_status: 'pending',
-        // Add the cart items to your order
-        items: cart.products, // Assuming this is the correct format
+        items: orderItems,
       });
 
       await newOrder.save();
