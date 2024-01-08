@@ -1,5 +1,5 @@
 const Order = require('../model/orderModel'); // Adjust the path as necessary
-const Product = require('../model/productModel'); // Adjust the path as necessary
+const Cart = require('../model/cartModel'); // Adjust the path as necessary
 const {successMsg, errorMsg} = require('../utils/response');
 
 const orderController = {
@@ -10,7 +10,7 @@ const orderController = {
       const {userId, address, city, postalCode, country, subTotal, total} =
         req.body;
 
-      // Validation (you can add more detailed checks)
+      // Validation
       if (
         !userId ||
         !address ||
@@ -23,7 +23,15 @@ const orderController = {
         return errorMsg(res, 'Missing required fields', 400);
       }
 
-      // Create the order
+      // Fetch the user's cart
+      const cart = await Cart.findOne({userId}).populate('products.cartItem');
+      if (!cart || cart.products.length === 0) {
+        return errorMsg(res, 'Cart is empty or not found', 404);
+      }
+
+      // Process cart items here (transform them as needed for your Order model)
+
+      // Create the order with cart items
       const newOrder = new Order({
         userId,
         address,
@@ -33,9 +41,15 @@ const orderController = {
         subTotal,
         total,
         payment_status: 'pending',
+        // Add the cart items to your order
+        items: cart.products, // Assuming this is the correct format
       });
 
       await newOrder.save();
+
+      // Optional: Clear the user's cart after creating the order
+      await Cart.findOneAndUpdate({userId}, {$set: {products: []}});
+
       successMsg(res, 'Order created successfully', newOrder, 201);
     } catch (error) {
       errorMsg(res, 'Error creating order', 500, error.message);
