@@ -3,19 +3,24 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema(
   {
     userId: {
+      type: mongoose.Schema.Types.ObjectId, // Assuming it references a User document
+      required: true,
+      ref: 'User',
+    },
+    address: {
       type: String,
       required: true,
     },
-    customerId: {
+    city: {
       type: String,
       required: true,
     },
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+    postalCode: {
+      type: String,
+      required: true,
     },
-    quantity: {
-      type: Number,
+    country: {
+      type: String,
       required: true,
     },
     subTotal: {
@@ -26,17 +31,11 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    delivery_status: {
-      type: Number,
-      default: 'pending',
-    },
-    delivery_status: {
-      type: Number,
-      default: 'pending',
-    },
-    payment_status: {
-      type: Number,
+    paymentStatus: {
+      // Updated field name for consistency
+      type: String,
       required: true,
+      default: 'pending',
     },
   },
   {

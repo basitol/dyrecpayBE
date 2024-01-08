@@ -4,28 +4,35 @@ const {successMsg, errorMsg} = require('../utils/response');
 
 const orderController = {
   // Create a new order
+  // Example backend code (in your order routes/controller)
   createOrder: async (req, res) => {
-    const {
-      userId,
-      customerId,
-      productId,
-      quantity,
-      subTotal,
-      total,
-      payment_status,
-    } = req.body;
-
     try {
-      // You might want to validate the product existence, customer existence, etc.
+      const {userId, address, city, postalCode, country, subTotal, total} =
+        req.body;
 
+      // Validation (you can add more detailed checks)
+      if (
+        !userId ||
+        !address ||
+        !city ||
+        !postalCode ||
+        !country ||
+        !subTotal ||
+        !total
+      ) {
+        return errorMsg(res, 'Missing required fields', 400);
+      }
+
+      // Create the order
       const newOrder = new Order({
         userId,
-        customerId,
-        productId,
-        quantity,
+        address,
+        city,
+        postalCode,
+        country,
         subTotal,
         total,
-        payment_status,
+        payment_status: 'pending',
       });
 
       await newOrder.save();
