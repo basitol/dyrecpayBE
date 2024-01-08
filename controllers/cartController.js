@@ -3,42 +3,6 @@ const Product = require('../model/productModel');
 const {successMsg, errorMsg} = require('../utils/response');
 
 const cartController = {
-  // addItemToCart: async (req, res) => {
-  //   const {userId, productId, quantity} = req.body;
-
-  //   if (!quantity || isNaN(quantity)) {
-  //     return errorMsg(res, 'Invalid quantity provided', 400);
-  //   }
-
-  //   const numericQuantity = parseInt(quantity, 10);
-
-  //   try {
-  //     let cart = await Cart.findOne({userId});
-
-  //     if (cart) {
-  //       let itemIndex = cart.products.findIndex(p => p.cartItem == productId);
-
-  //       if (itemIndex > -1) {
-  //         let productItem = cart.products[itemIndex];
-  //         productItem.quantity += numericQuantity;
-  //         cart.products[itemIndex] = productItem;
-  //       } else {
-  //         cart.products.push({cartItem: productId, quantity: numericQuantity});
-  //       }
-  //       cart = await cart.save();
-  //       successMsg(res, 'Item added to cart', cart);
-  //     } else {
-  //       const newCart = await Cart.create({
-  //         userId,
-  //         products: [{cartItem: productId, quantity: numericQuantity}],
-  //       });
-  //       successMsg(res, 'Cart created and item added', newCart, 201);
-  //     }
-  //   } catch (error) {
-  //     errorMsg(res, 'Error adding item to cart', 500, error.message);
-  //   }
-  // },
-
   addItemToCart: async (req, res) => {
     const {userId, productId} = req.body;
 
