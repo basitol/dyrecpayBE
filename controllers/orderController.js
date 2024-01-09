@@ -134,12 +134,10 @@ const orderController = {
       });
     }
   },
-  // ... othe
 
-  // Update order status
-  updateOrderStatus: async (req, res) => {
+  // Update order to paid
+  updateOrderToPaid: async (req, res) => {
     const {orderId} = req.params;
-    const {delivery_status, payment_status} = req.body;
 
     try {
       const order = await Order.findById(orderId);
@@ -147,13 +145,38 @@ const orderController = {
         return errorMsg(res, 'Order not found', 404);
       }
 
-      order.delivery_status = delivery_status || order.delivery_status;
-      order.payment_status = payment_status || order.payment_status;
+      // Set the payment status to 'paid'
+      order.paymentStatus = 'paid';
       await order.save();
 
-      successMsg(res, 'Order updated successfully', order);
+      successMsg(res, 'Order updated to paid successfully', order);
     } catch (error) {
-      errorMsg(res, 'Error updating order', 500, error.message);
+      errorMsg(res, 'Error updating order to paid', 500, error.message);
+    }
+  },
+
+  // Update delivery status (Admin only)
+  updateDeliveryStatus: async (req, res) => {
+    const {orderId} = req.params;
+    const {delivery_status} = req.body;
+
+    // Add your admin verification logic here
+    // if (!req.user.isAdmin) {
+    //   return errorMsg(res, 'Unauthorized', 401);
+    // }
+
+    try {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        return errorMsg(res, 'Order not found', 404);
+      }
+
+      order.delivery_status = delivery_status;
+      await order.save();
+
+      successMsg(res, 'Delivery status updated successfully', order);
+    } catch (error) {
+      errorMsg(res, 'Error updating delivery status', 500, error.message);
     }
   },
 };
