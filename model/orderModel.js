@@ -12,7 +12,6 @@ const productItemSchema = new mongoose.Schema({
     required: true,
     min: 1,
   },
-  // Include any other fields that are relevant for an item in the order
 });
 
 const orderSchema = new mongoose.Schema(
@@ -47,10 +46,15 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     paymentStatus: {
-      // Updated field name for consistency
       type: String,
       required: true,
       default: 'pending',
+    },
+    delivery_status: {
+      type: String,
+      required: true,
+      default: 'pending',
+      enum: ['pending', 'shipped', 'delivered', 'cancelled'], // example statuses
     },
     items: [productItemSchema],
   },
