@@ -74,6 +74,68 @@ const orderController = {
     }
   },
 
+  // getOrdersByUserId: async (req, res) => {
+  //   const {userId} = req.params;
+
+  //   console.log(`Fetching orders for user ID: ${userId}`); // Log the user ID
+
+  //   try {
+  //     // Automatically converts string to ObjectId
+  //     const orders = await Order.find({userId}).populate('items.product'); // Adjust the populate method according to your schema
+
+  //     if (!orders.length) {
+  //       return res
+  //         .status(404)
+  //         .json({status: false, message: 'Order not found'});
+  //     }
+
+  //     return res.status(200).json({
+  //       status: true,
+  //       message: 'Orders fetched successfully',
+  //       data: orders,
+  //     });
+  //   } catch (error) {
+  //     console.error('Error fetching orders:', error);
+  //     return res.status(500).json({
+  //       status: false,
+  //       message: 'Error fetching orders',
+  //       error: error.message,
+  //     });
+  //   }
+  // },
+
+  getOrdersByUserId: async (req, res) => {
+    const {userId} = req.params;
+
+    console.log(`Fetching orders for user ID: ${userId}`);
+
+    try {
+      const orders = await Order.find({userId}).populate('items.product');
+
+      console.log(`Orders found: ${orders.length}`);
+
+      if (!orders.length) {
+        return res
+          .status(404)
+          .json({status: false, message: 'No orders found for this user'});
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: 'Orders fetched successfully',
+        data: orders,
+      });
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return res.status(500).json({
+        status: false,
+        message: 'Error fetching orders',
+        error: error.message,
+      });
+    }
+  },
+  // ... othe
+
   // Update order status
   updateOrderStatus: async (req, res) => {
     const {orderId} = req.params;
